@@ -1,0 +1,40 @@
+{
+  "name": "github-docs-rag",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Section-based RAG database and MCP server for GitHub Docs.",
+  "bin": {
+    "github-docs-rag": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "ingest": "tsx src/cli.ts ingest",
+    "query": "tsx src/cli.ts query",
+    "mcp": "tsx src/cli.ts mcp",
+    "test": "node --import tsx --test test/**/*.test.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "better-sqlite3": "^12.2.0",
+    "fast-glob": "^3.3.3",
+    "github-slugger": "^2.0.0",
+    "gray-matter": "^4.0.3",
+    "mdast-util-to-string": "^4.0.0",
+    "openai": "^5.12.2",
+    "remark-parse": "^11.0.0",
+    "sqlite-vec": "^0.1.7-alpha.2",
+    "unified": "^11.0.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
