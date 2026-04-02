@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Section-based RAG database and MCP server for GitHub Docs.",
   "bin": {
-    "github-docs-rag": "./dist/cli.js"
+    "github-docs-rag": "./dist/src/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -13,6 +13,7 @@
     "ingest": "tsx src/cli.ts ingest",
     "query": "tsx src/cli.ts query",
     "mcp": "tsx src/cli.ts mcp",
+    "mcp:http": "tsx src/cli.ts mcp-http",
     "test": "node --import tsx --test test/**/*.test.ts"
   },
   "engines": {

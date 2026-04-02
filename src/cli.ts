@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { loadConfig } from "./config.js";
+import { loadConfig, loadHttpServerConfig } from "./config.js";
 import { OpenAiEmbeddingProvider } from "./embeddings.js";
 import { ingestGithubDocs } from "./ingest.js";
-import { startMcpServer } from "./mcp.js";
+import { startHttpMcpServer, startMcpServer } from "./mcp.js";
 import { searchGithubDocs } from "./search.js";
 
 async function main(): Promise<void> {
@@ -47,9 +47,40 @@ async function main(): Promise<void> {
       return;
     }
 
+    case "mcp-http": {
+      const server = await startHttpMcpServer(
+        config,
+        provider,
+        loadHttpServerConfig(),
+      );
+      console.log(`MCP HTTP server listening on ${server.endpoint}`);
+      registerShutdown(server.close);
+      return;
+    }
+
     default:
       throw new Error(`Unknown command: ${command}`);
   }
+}
+
+function registerShutdown(close: () => Promise<void>): void {
+  let shuttingDown = false;
+
+  const shutdown = async (): Promise<void> => {
+    if (shuttingDown) {
+      return;
+    }
+
+    shuttingDown = true;
+    await close();
+  };
+
+  process.once("SIGINT", () => {
+    void shutdown();
+  });
+  process.once("SIGTERM", () => {
+    void shutdown();
+  });
 }
 
 function hasFlag(flag: string): boolean {
@@ -71,6 +102,7 @@ Usage:
   github-docs-rag ingest [--pull] [--rebuild]
   github-docs-rag query --q "<text>" [--top-k N] [--path-prefix content/actions/]
   github-docs-rag mcp
+  github-docs-rag mcp-http
   `.trim());
 }
 

@@ -12,6 +12,12 @@ export interface AppConfig {
   embeddingDimension: number;
 }
 
+export interface HttpServerConfig {
+  host: string;
+  port: number;
+  path: string;
+}
+
 export function getProjectRoot(): string {
   const currentFile = fileURLToPath(import.meta.url);
   return path.resolve(path.dirname(currentFile), "..");
@@ -41,4 +47,27 @@ export function loadConfig(): AppConfig {
       10,
     ),
   };
+}
+
+export function loadHttpServerConfig(
+  env: NodeJS.ProcessEnv = process.env,
+): HttpServerConfig {
+  const port = Number.parseInt(env.MCP_HTTP_PORT ?? "3000", 10);
+  if (!Number.isInteger(port) || port < 0 || port > 65535) {
+    throw new Error(`Invalid MCP_HTTP_PORT: ${env.MCP_HTTP_PORT ?? ""}`);
+  }
+
+  return {
+    host: env.MCP_HTTP_HOST?.trim() || "0.0.0.0",
+    port,
+    path: normalizeHttpPath(env.MCP_HTTP_PATH?.trim() || "/mcp"),
+  };
+}
+
+function normalizeHttpPath(pathValue: string): string {
+  if (!pathValue || pathValue === "/") {
+    return "/mcp";
+  }
+
+  return pathValue.startsWith("/") ? pathValue : `/${pathValue}`;
 }
